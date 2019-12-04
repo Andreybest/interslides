@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "commonjs",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
