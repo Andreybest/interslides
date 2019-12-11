@@ -20,8 +20,8 @@ function createWindow() {
     minHeight: 550,
     webPreferences: {
       preload: `${__dirname}/../dist/preloaders/index.js`,
-      contextIsolation: true
-    }
+      contextIsolation: true,
+    },
   });
 
   // and load the index.html of the app.
@@ -34,18 +34,15 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-};
-
-
-ipcMain.on('open-presentation', () => createPresentationWindow());
+}
 
 function createPresentationWindow(): void {
-  let newWindow: BrowserWindow = new BrowserWindow({
+  const newWindow: BrowserWindow = new BrowserWindow({
     width: 1200,
-    height: 600
+    height: 600,
   });
 
-  newWindow.on('close', (event: Event) => {
+  newWindow.on('close', () => {
     createWindow();
   });
   mainWindow.close();
@@ -56,6 +53,8 @@ function createPresentationWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
+
+ipcMain.on('open-presentation', () => createPresentationWindow());
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
