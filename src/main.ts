@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -7,9 +7,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: Electron.BrowserWindow;
+let mainWindow: BrowserWindow;
 
-const createWindow = () => {
+function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 600,
@@ -17,14 +17,15 @@ const createWindow = () => {
     minWidth: 400,
     height: 800,
     maxHeight: 1200,
-    minHeight: 550
+    minHeight: 550,
+    webPreferences: {
+      preload: `${__dirname}/../dist/preloaders/index.js`,
+      contextIsolation: true
+    }
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/../public/menu/index.html`);
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -34,6 +35,22 @@ const createWindow = () => {
     mainWindow = null;
   });
 };
+
+
+ipcMain.on('open-presentation', () => createPresentationWindow());
+
+function createPresentationWindow(): void {
+  let newWindow: BrowserWindow = new BrowserWindow({
+    width: 1200,
+    height: 600
+  });
+
+  newWindow.on('close', (event: Event) => {
+    createWindow();
+  });
+  mainWindow.close();
+  mainWindow = Object.assign(Object.create(Object.getPrototypeOf(newWindow)), newWindow);
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -1,6 +1,4 @@
-for (const item of document.getElementsByTagName('a')) {
-    item.onclick = (event) => {
-        event.preventDefault();
-        alert('TODO!');
-    };
+document.getElementById('open').onclick = (event) => {
+    event.preventDefault();
+    window.postMessage({ message: 'open-presentation' }, '*');
 }

@@ -13,11 +13,10 @@ main {
 }
 
 #container {
-	width: 500px;
+	width: 300px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	text-align: center;
 }
 
 #buttons {
@@ -28,4 +27,8 @@ main {
 
 #buttons > a {
 	margin-top: 15px;
+}
+
+#logo {
+	text-align: center;
 }
