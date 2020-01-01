@@ -1,4 +1,7 @@
-document.getElementById('open').onclick = (event) => {
-  event.preventDefault();
-  window.postMessage({ message: 'open-presentation' }, '*');
-};
+const buttonOpen = document.getElementById('open');
+if (buttonOpen) {
+  buttonOpen.onclick = (event) => {
+    event.preventDefault();
+    window.postMessage({ message: 'open-file' }, '*');
+  };
+}

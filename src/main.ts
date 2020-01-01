@@ -1,4 +1,7 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import {
+  app, BrowserWindow, ipcMain, dialog,
+} from 'electron';
+import WebServer from './webServer';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -7,9 +10,11 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: BrowserWindow;
+let mainWindow: BrowserWindow | null;
 
-function createWindow() {
+let server: WebServer;
+
+function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 600,
@@ -36,25 +41,52 @@ function createWindow() {
   });
 }
 
-function createPresentationWindow(): void {
+function createPresentationWindow(htmlLink: string): void {
   const newWindow: BrowserWindow = new BrowserWindow({
     width: 1200,
     height: 600,
+    webPreferences: {
+      preload: `${__dirname}/../dist/preloaders/presentation.js`,
+      contextIsolation: true,
+    },
   });
 
+  newWindow.loadURL(htmlLink);
+
   newWindow.on('close', () => {
+    server.closeWebServer();
     createWindow();
   });
-  mainWindow.close();
-  mainWindow = Object.assign(Object.create(Object.getPrototypeOf(newWindow)), newWindow);
+  if (mainWindow) {
+    mainWindow.close();
+    mainWindow = Object.assign(Object.create(Object.getPrototypeOf(newWindow)), newWindow);
+  }
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+});
 
-ipcMain.on('open-presentation', () => createPresentationWindow());
+async function openFile(): Promise<void> {
+  if (mainWindow) {
+    const file: Electron.OpenDialogReturnValue = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [
+        { name: 'HTML page', extensions: ['html', 'htm'] },
+      ],
+    });
+    if (file.filePaths.length > 0) {
+      createPresentationWindow(file.filePaths[0]);
+      server = new WebServer();
+      server.createWebServer(file.filePaths[0]);
+    }
+  }
+}
+
+ipcMain.on('open-file', () => openFile());
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
