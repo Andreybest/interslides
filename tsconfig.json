@@ -8,7 +8,9 @@
     "paths": {
       "*": ["node_modules/*"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true
   },
   "include": [
     "src/**/*"
