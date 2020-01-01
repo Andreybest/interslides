@@ -20,9 +20,24 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "linebreak-style": [ "error", "windows"]
+        "linebreak-style": [ "error", "windows"],
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never"
+            }
+        ]
     },
     "settings": {
-        "import/core-modules": [ "electron" ]
+        "import/core-modules": [ "electron" ],
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        }
     }
 }
