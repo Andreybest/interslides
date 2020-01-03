@@ -57,6 +57,7 @@ function createPresentationWindow(htmlLink: string): void {
     server.closeWebServer();
     createWindow();
   });
+
   if (mainWindow) {
     mainWindow.close();
     mainWindow = Object.assign(Object.create(Object.getPrototypeOf(newWindow)), newWindow);
@@ -70,23 +71,25 @@ app.on('ready', () => {
   createWindow();
 });
 
-async function openFile(): Promise<void> {
+function openFile(window: BrowserWindow): Promise<Electron.OpenDialogReturnValue> {
+  return dialog.showOpenDialog(window, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'HTML page', extensions: ['html', 'htm'] },
+    ],
+  });
+}
+
+ipcMain.on('open-file', async () => {
   if (mainWindow) {
-    const file: Electron.OpenDialogReturnValue = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openFile'],
-      filters: [
-        { name: 'HTML page', extensions: ['html', 'htm'] },
-      ],
-    });
+    const file = await openFile(mainWindow);
     if (file.filePaths.length > 0) {
       createPresentationWindow(file.filePaths[0]);
       server = new WebServer();
       server.createWebServer(file.filePaths[0]);
     }
   }
-}
-
-ipcMain.on('open-file', () => openFile());
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
