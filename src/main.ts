@@ -2,6 +2,8 @@ import {
   app, BrowserWindow, ipcMain, dialog,
 } from 'electron';
 import WebServer from './webServer';
+import Archive from './Archive';
+import removeDirectory from './removeDirectory';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -11,6 +13,8 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow: BrowserWindow | null;
 
 let server: WebServer;
+
+const tempFolderName = 'interslides';
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -33,6 +37,10 @@ function createWindow(): void {
   });
 }
 
+function removeTempFiles() {
+  removeDirectory(`${app.getPath('temp')}/${tempFolderName}`);
+}
+
 function createPresentationWindow(htmlLink: string): void {
   const newWindow: BrowserWindow = new BrowserWindow({
     width: 1200,
@@ -47,6 +55,7 @@ function createPresentationWindow(htmlLink: string): void {
 
   newWindow.on('close', () => {
     server.closeWebServer();
+    removeTempFiles();
     createWindow();
   });
 
@@ -64,7 +73,7 @@ function openFile(window: BrowserWindow): Promise<Electron.OpenDialogReturnValue
   return dialog.showOpenDialog(window, {
     properties: ['openFile'],
     filters: [
-      { name: 'HTML page', extensions: ['html', 'htm'] },
+      { name: 'InterSlides file', extensions: ['is'] },
     ],
   });
 }
@@ -73,14 +82,29 @@ ipcMain.on('open-file', async () => {
   if (mainWindow) {
     const file = await openFile(mainWindow);
     if (file.filePaths.length > 0) {
-      createPresentationWindow(file.filePaths[0]);
-      server = new WebServer();
-      server.createWebServer(file.filePaths[0]);
+      const tempFolder = `${app.getPath('temp')}/${tempFolderName}`;
+      try {
+        const archive = new Archive();
+        await archive.loadFile(file.filePaths[0]);
+        await archive.unpackToFolder(tempFolder);
+      } catch (error) {
+        dialog.showMessageBox(mainWindow, { message: (error as Error).message });
+      }
+
+      createPresentationWindow(`${tempFolder}/${Archive.localFileName}`);
+
+      try {
+        server = new WebServer();
+        server.createWebServer(`${tempFolder}/${Archive.remoteFileName}`);
+      } catch (error) {
+        dialog.showMessageBox(mainWindow, { message: (error as Error).message });
+      }
     }
   }
 });
 
 app.on('window-all-closed', () => {
+  removeTempFiles();
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
