@@ -26,7 +26,6 @@ function createWindow(): void {
     minHeight: 550,
     webPreferences: {
       preload: `${__dirname}/../dist/preloaders/index.js`,
-      contextIsolation: true,
     },
   });
 
@@ -49,7 +48,6 @@ function createPresentationWindow(htmlLink: string): void {
     fullscreen: true,
     webPreferences: {
       preload: `${__dirname}/../dist/preloaders/presentation.js`,
-      contextIsolation: true,
     },
   });
 

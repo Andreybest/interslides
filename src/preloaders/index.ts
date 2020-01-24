@@ -1,11 +1,7 @@
 import { ipcRenderer } from 'electron';
 
-process.once('loaded', () => {
-  window.addEventListener('message', (event) => {
-    const message = event.data;
+(window as any).api = {};
 
-    if (message.message === 'open-file') {
-      ipcRenderer.send('open-file');
-    }
-  });
-});
+(window as any).api.openFile = () => {
+  ipcRenderer.send('open-file');
+};
