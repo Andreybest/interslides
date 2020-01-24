@@ -1,7 +1,7 @@
 import {
   app, BrowserWindow, ipcMain, dialog, Menu,
 } from 'electron';
-import WebServer from './webServer';
+import WebServer from './WebServer';
 import Archive from './Archive';
 import removeDirectory from './removeDirectory';
 
