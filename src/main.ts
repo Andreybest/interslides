@@ -1,5 +1,5 @@
 import {
-  app, BrowserWindow, ipcMain, dialog,
+  app, BrowserWindow, ipcMain, dialog, Menu,
 } from 'electron';
 import WebServer from './webServer';
 import Archive from './Archive';
@@ -45,6 +45,8 @@ function createPresentationWindow(htmlLink: string): void {
   const newWindow: BrowserWindow = new BrowserWindow({
     width: 1200,
     height: 600,
+    frame: false,
+    fullscreen: true,
     webPreferences: {
       preload: `${__dirname}/../dist/preloaders/presentation.js`,
       contextIsolation: true,
@@ -66,6 +68,7 @@ function createPresentationWindow(htmlLink: string): void {
 }
 
 app.on('ready', () => {
+  Menu.setApplicationMenu(null);
   createWindow();
 });
 
