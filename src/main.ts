@@ -54,7 +54,7 @@ function createPresentationWindow(): void {
     },
   });
 
-  presentationWindow.loadURL(`file://${__dirname}/../public/presentation/presentationLocal.html`);
+  presentationWindow.loadURL(`file://${__dirname}/../public/presentationLocal/presentationLocal.html`);
 
   presentationWindow.on('close', () => {
     server.closeWebServer();
