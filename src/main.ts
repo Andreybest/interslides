@@ -50,11 +50,11 @@ function createPresentationWindow(): void {
     frame: false,
     fullscreen: true,
     webPreferences: {
-      preload: `${__dirname}/../dist/preloaders/presentation.js`,
+      preload: `${__dirname}/../dist/preloaders/presentationLocal.js`,
     },
   });
 
-  presentationWindow.loadURL(`file://${__dirname}/../public/presentation/presentation.html`);
+  presentationWindow.loadURL(`file://${__dirname}/../public/presentation/presentationLocal.html`);
 
   presentationWindow.on('close', () => {
     server.closeWebServer();
