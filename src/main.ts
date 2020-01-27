@@ -11,6 +11,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 let mainWindow: BrowserWindow | null;
+let presentationWindow: BrowserWindow | null;
 
 let server: WebServer;
 
@@ -40,8 +41,10 @@ function removeTempFiles() {
   removeDirectory(`${app.getPath('temp')}/${tempFolderName}`);
 }
 
-function createPresentationWindow(htmlLink: string): void {
-  const newWindow: BrowserWindow = new BrowserWindow({
+function createPresentationWindow(): void {
+  if (mainWindow) mainWindow.hide();
+
+  presentationWindow = new BrowserWindow({
     width: 1200,
     height: 600,
     frame: false,
@@ -51,18 +54,13 @@ function createPresentationWindow(htmlLink: string): void {
     },
   });
 
-  newWindow.loadURL(htmlLink);
+  presentationWindow.loadURL(`file://${__dirname}/../public/presentation/presentation.html`);
 
-  newWindow.on('close', () => {
+  presentationWindow.on('close', () => {
     server.closeWebServer();
     removeTempFiles();
-    createWindow();
+    if (mainWindow) mainWindow.show();
   });
-
-  if (mainWindow) {
-    mainWindow.close();
-    mainWindow = Object.assign(Object.create(Object.getPrototypeOf(newWindow)), newWindow);
-  }
 }
 
 app.on('ready', () => {
@@ -92,17 +90,19 @@ ipcMain.on('open-file', async () => {
         dialog.showMessageBox(mainWindow, { message: (error as Error).message });
       }
 
-      createPresentationWindow(`${tempFolder}/${Archive.localFileName}`);
+      createPresentationWindow();
 
       try {
         server = new WebServer();
-        server.createWebServer(`${tempFolder}/${Archive.remoteFileName}`);
+        server.createWebServer(`${tempFolder}/${Archive.remoteFileName}`, `${tempFolder}/${Archive.localFileName}`);
       } catch (error) {
         dialog.showMessageBox(mainWindow, { message: (error as Error).message });
       }
     }
   }
 });
+
+ipcMain.on('close-presentation-window', () => presentationWindow?.close());
 
 app.on('window-all-closed', () => {
   removeTempFiles();

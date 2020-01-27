@@ -1,11 +1,7 @@
 import { ipcRenderer } from 'electron';
 
-process.once('loaded', () => {
-  window.addEventListener('message', (event) => {
-    const message = event.data;
+(window as any).api = {};
 
-    if (message.message === 'create-web-server') {
-      ipcRenderer.send('create-web-server');
-    }
-  });
-});
+(window as any).api.closeWindow = () => {
+  ipcRenderer.send('close-presentation-window');
+};

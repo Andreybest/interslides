@@ -9,11 +9,15 @@ export default class WebServer {
 
   server: Server;
 
-  createWebServer(htmlLink: string): void {
-    this.web.use(express.static(`${htmlLink}/..`));
+  createWebServer(remoteHtmlLink: string, localHtmlLink: string): void {
+    this.web.use(express.static(`${remoteHtmlLink}/..`));
 
     this.web.get('/', (request, response) => {
-      response.sendFile(htmlLink);
+      response.sendFile(remoteHtmlLink);
+    });
+
+    this.web.get('/localPath', (request, respose) => {
+      respose.send(localHtmlLink);
     });
 
     this.server = this.web.listen(this.port);
