@@ -4,6 +4,7 @@ import {
 import WebServer from './WebServer';
 import Archive from './Archive';
 import removeDirectory from './removeDirectory';
+import copyFolder from './copyFolder';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -16,6 +17,7 @@ let presentationWindow: BrowserWindow | null;
 let server: WebServer;
 
 const tempFolderName = 'interslides';
+const tempPresentationFolderName = 'presentation';
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -77,6 +79,10 @@ function openFile(window: BrowserWindow): Promise<Electron.OpenDialogReturnValue
   });
 }
 
+async function loadRemoteTempFiles(): Promise<void> {
+  await copyFolder('./public/presentationRemote', `${app.getPath('temp')}/${tempFolderName}`);
+}
+
 ipcMain.on('open-file', async () => {
   if (mainWindow) {
     const file = await openFile(mainWindow);
@@ -85,7 +91,8 @@ ipcMain.on('open-file', async () => {
       try {
         const archive = new Archive();
         await archive.loadFile(file.filePaths[0]);
-        await archive.unpackToFolder(tempFolder);
+        await archive.unpackToFolder(`${tempFolder}/${tempPresentationFolderName}`);
+        await loadRemoteTempFiles();
       } catch (error) {
         dialog.showMessageBox(mainWindow, { message: (error as Error).message });
       }
@@ -94,7 +101,7 @@ ipcMain.on('open-file', async () => {
 
       try {
         server = new WebServer();
-        server.createWebServer(`${tempFolder}/${Archive.remoteFileName}`, `${tempFolder}/${Archive.localFileName}`);
+        server.createWebServer(`${tempFolder}/${tempPresentationFolderName}/${Archive.remoteFileName}`, `${tempFolder}/presentationRemote.html`, `${tempFolder}/${tempPresentationFolderName}/${Archive.localFileName}`);
       } catch (error) {
         dialog.showMessageBox(mainWindow, { message: (error as Error).message });
       }

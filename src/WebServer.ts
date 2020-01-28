@@ -9,10 +9,14 @@ export default class WebServer {
 
   server: Server;
 
-  createWebServer(remoteHtmlLink: string, localHtmlLink: string): void {
-    this.web.use(express.static(`${remoteHtmlLink}/..`));
+  createWebServer(remoteHtmlLink: string, remoteIframeLink: string, localHtmlLink: string): void {
+    this.web.use(express.static(`${remoteIframeLink}/..`));
 
     this.web.get('/', (request, response) => {
+      response.sendFile(remoteIframeLink);
+    });
+
+    this.web.get('/remote', (request, response) => {
       response.sendFile(remoteHtmlLink);
     });
 
