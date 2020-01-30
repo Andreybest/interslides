@@ -1,30 +1,50 @@
 import * as express from 'express';
 // eslint-disable-next-line no-unused-vars
-import { Server } from 'http';
+import { createServer, Server } from 'http';
+import * as socketIO from 'socket.io';
 
 export default class WebServer {
-  web = express();
-
   port: number = 80;
 
-  server: Server;
+  private app: express.Application;
+
+  private server: Server;
+
+  private io: SocketIO.Server;
+
+  constructor() {
+    this.app = express();
+    this.server = createServer(this.app);
+  }
 
   createWebServer(remoteHtmlLink: string, remoteIframeLink: string, localHtmlLink: string): void {
-    this.web.use(express.static(`${remoteIframeLink}/..`));
+    this.io = socketIO(this.server);
 
-    this.web.get('/', (request, response) => {
+    this.app.use(express.static(`${remoteIframeLink}/..`));
+
+    this.app.get('/', (request, response) => {
       response.sendFile(remoteIframeLink);
     });
 
-    this.web.get('/remote', (request, response) => {
+    this.app.get('/remote', (request, response) => {
       response.sendFile(remoteHtmlLink);
     });
 
-    this.web.get('/localPath', (request, respose) => {
+    this.app.get('/localPath', (request, respose) => {
       respose.send(localHtmlLink);
     });
 
-    this.server = this.web.listen(this.port);
+    this.server.listen(this.port);
+
+    this.io.on('connect', (socket: SocketIO.Socket) => {
+      socket.on('message', (data) => {
+        this.io.emit('message', data);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Client disconnected');
+      });
+    });
   }
 
   closeWebServer(): void {

@@ -13,4 +13,19 @@ function keydown(event: KeyboardEvent) {
   }
 }
 
+let socket: SocketIOClient.Socket;
+
+function connectToIO() {
+  // eslint-disable-next-line no-undef
+  socket = io.connect('http://localhost:80');
+}
+
+function createMessageEventsRecivers() {
+  window.addEventListener('message', (event: MessageEvent) => {
+    socket.emit('message', event.data);
+  });
+}
+
+connectToIO();
 loadIframe();
+createMessageEventsRecivers();
