@@ -6,7 +6,7 @@ let socket;
 
 function connectToIO() {
   // eslint-disable-next-line no-undef
-  socket = io.connect('http://localhost:80');
+  socket = io.connect();
 }
 
 function createMessagePosters() {
