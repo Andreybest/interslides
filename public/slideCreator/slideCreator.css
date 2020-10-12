@@ -1,0 +1,63 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+    user-select: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #3C91E6;
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.material-icons {
+    color: #EBF2FA;
+    cursor: pointer;
+    font-size: 32px;
+    margin-left: 5px;
+}
+
+.material-icons:hover {
+    border-radius: 10%;
+    background-color: #70BDF0;
+}
+
+.material-icons:active {
+    border-radius: 10%;
+    background-color: #56a7eb;
+}
+
+main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+slides {
+    width: 300px;
+    height: 100%;
+}
+
+editor {
+    background-color: red;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.element {
+    user-select: text;
+}

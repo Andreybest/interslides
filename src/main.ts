@@ -12,6 +12,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 let mainWindow: BrowserWindow | null;
+let slideCreationWindow: BrowserWindow | null;
 let presentationWindow: BrowserWindow | null;
 
 let server: WebServer;
@@ -41,6 +42,33 @@ function createWindow(): void {
 
 function removeTempFiles() {
   removeDirectory(`${app.getPath('temp')}/${tempFolderName}`);
+}
+
+function createSlideCreationWindow(): void {
+  if (mainWindow) mainWindow.hide();
+
+  slideCreationWindow = new BrowserWindow({
+    width: 1200,
+    minWidth: 800,
+    height: 600,
+    minHeight: 400,
+    webPreferences: {
+      preload: `${__dirname}/../dist/preloaders/slideCreator.js`,
+    },
+  });
+
+  slideCreationWindow.loadURL(`file://${__dirname}/../public/slideCreator/slideCreator.html`);
+
+  slideCreationWindow.center();
+
+  slideCreationWindow.webContents.openDevTools();
+
+  // slideCreationWindow.maximize();
+
+  slideCreationWindow.on('close', () => {
+    removeTempFiles();
+    if (mainWindow) mainWindow.show();
+  });
 }
 
 function createPresentationWindow(): void {
@@ -82,6 +110,12 @@ function openFile(window: BrowserWindow): Promise<Electron.OpenDialogReturnValue
 async function loadRemoteTempFiles(): Promise<void> {
   await copyFolder('./public/presentationRemote', `${app.getPath('temp')}/${tempFolderName}`);
 }
+
+ipcMain.on('new-file', async () => {
+  if (mainWindow) {
+    createSlideCreationWindow();
+  }
+});
 
 ipcMain.on('open-file', async () => {
   if (mainWindow) {

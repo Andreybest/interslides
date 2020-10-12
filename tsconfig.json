@@ -10,7 +10,8 @@
     },
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "lib": ["DOM"]
   },
   "include": [
     "src/**/*"
