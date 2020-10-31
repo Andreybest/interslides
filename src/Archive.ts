@@ -1,5 +1,5 @@
 import * as JSZip from 'jszip';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync } from 'fs';
 import * as mkdirp from 'mkdirp';
 import { dirname } from 'path';
 
@@ -36,5 +36,25 @@ export default class Archive {
         writeFileSync(`${folderPath}/${this.archive.files[keys[i]].name}`, content, { flag: 'w' });
       }
     }
+  }
+
+  public static async saveFolderAsArchive(folderPath: string, generatedArchivePath: string): Promise<void> {
+    const archive = Archive.writeFilesToArchiveRecursively(folderPath, new JSZip());
+    const archiveContent = await archive.generateAsync({ type: 'nodebuffer' });
+    writeFileSync(generatedArchivePath, archiveContent);
+  }
+
+  private static writeFilesToArchiveRecursively(folderPath: string, archive: JSZip): JSZip {
+    const dir = readdirSync(folderPath, { withFileTypes: true });
+    // eslint-disable-next-line no-restricted-syntax
+    for (const file of dir) {
+      if (file.isDirectory()) {
+        const folder = archive.folder(file.name) as JSZip;
+        Archive.writeFilesToArchiveRecursively(`${folderPath}/${file.name}`, folder);
+      } else {
+        archive.file(file.name, readFileSync(`${folderPath}/${file.name}`));
+      }
+    }
+    return archive;
   }
 }

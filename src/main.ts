@@ -5,6 +5,7 @@ import WebServer from './WebServer';
 import Archive from './Archive';
 import removeDirectory from './removeDirectory';
 import copyFolder from './copyFolder';
+import fillHtmlFile from './fillHtmlFile';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -123,6 +124,7 @@ ipcMain.on('open-file', async () => {
     if (file.filePaths.length > 0) {
       const tempFolder = `${app.getPath('temp')}/${tempFolderName}`;
       try {
+        removeTempFiles();
         const archive = new Archive();
         await archive.loadFile(file.filePaths[0]);
         await archive.unpackToFolder(`${tempFolder}/${tempPresentationFolderName}`);
@@ -141,6 +143,24 @@ ipcMain.on('open-file', async () => {
       }
     }
   }
+});
+
+ipcMain.on('save-as', async (_, slides: [Map<number, string>, Map<number, string>]) => {
+  const path = await dialog.showSaveDialog({
+    filters: [
+      { name: 'InterSlides file', extensions: ['is'] },
+    ],
+    defaultPath: 'slides.is',
+  });
+
+  if (path.canceled) return;
+
+  const tempFolder = `${app.getPath('temp')}/${tempFolderName}/presentation`;
+  removeTempFiles();
+  await copyFolder('./public/slides-template', tempFolder);
+  fillHtmlFile(`${tempFolder}/local.html`, slides[0]);
+  fillHtmlFile(`${tempFolder}/remote.html`, slides[1]);
+  await Archive.saveFolderAsArchive(tempFolder, path.filePath as string);
 });
 
 ipcMain.on('close-presentation-window', () => presentationWindow?.close());

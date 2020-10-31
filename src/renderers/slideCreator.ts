@@ -33,7 +33,8 @@ function onControlButtonClick(event: MouseEvent, buttonName: string) {
   event.preventDefault();
   switch (buttonName) {
     case 'save':
-      alert('TO-DO!');
+      saveSlideInformation(currentSlideNumber, currentSlides);
+      (window as any).api.saveAs(slidesLocal, slidesRemote);
       break;
 
     case 'text-add':
@@ -261,7 +262,7 @@ function deleteSelectedElement() {
 // Called when person clicks on empty area on slide editor
 slideElement.onclick = (event) => {
   event.preventDefault();
-  if (selectedElement && event.target === slideElement) {
+  if (selectedElement && (event.target === slideElement || event.target === slideElement.childNodes[0])) {
     removeControlElements(selectedElement);
     selectedElement = undefined;
     saveSlideInformation(currentSlideNumber, currentSlides);
