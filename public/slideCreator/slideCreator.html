@@ -10,26 +10,61 @@
 </head>
 <body>
     <header>
-        <i class="material-icons font-increase">format_size</i>
-        <i class="material-icons font-decrease">text_fields</i>
-        <i class="material-icons font-bold">format_bold</i>
-        <i class="material-icons font-italic">format_italic</i>
-        <i class="material-icons font-underlined">format_underlined</i>
-        <i class="material-icons font-strikethrough">format_strikethrough</i>
-        <i class="material-icons insert-emoji">insert_emoticon</i>
+        <div>
+            <i class="material-icons save">save</i>
+        </div>
+        <div>
+            <i class="material-icons text-add">title</i>
+            <i class="material-icons image-add">insert_photo</i>
+            <i class="material-icons delete-element">delete</i>
+        </div>
+        <div>
+            <i class="material-icons font-increase">format_size</i>
+            <i class="material-icons font-decrease">text_fields</i>
+            <i class="material-icons font-bold">format_bold</i>
+            <i class="material-icons font-italic">format_italic</i>
+            <i class="material-icons font-underlined">format_underlined</i>
+            <i class="material-icons font-strikethrough">format_strikethrough</i>
+            <i class="material-icons insert-emoji">insert_emoticon</i>
 
-        <i class="material-icons align-left">format_align_left</i>
-        <i class="material-icons align-center">format_align_center</i>
-        <i class="material-icons align-right">format_align_right</i>
+            <i class="material-icons unordered-list">format_list_bulleted</i>
+            <i class="material-icons ordered-list">format_list_numbered</i>
+
+            <i class="material-icons align-left">format_align_left</i>
+            <i class="material-icons align-center">format_align_center</i>
+            <i class="material-icons align-right">format_align_right</i>
+        </div>
     </header>
 
     <main>
-        <slides>
-            // Here will be all slides
-        </slides>
-        <editor>
-            <div class="element" contenteditable>fg</div>
-        </editor>
+        <div id="slides">
+            <div id="change-local-remote-slides" class="slides-button">
+                <i class="material-icons">computer</i>
+            </div>
+            <div id="slides-container"></div>
+            <!-- <div class="slide">
+                <div class="slide-count">1.</div>
+                <div class="slide-preview-wrapper">
+                    <div class="slide-preview">
+                        
+                    </div>
+                </div>
+            </div> -->
+            <div id="add-slide-button" class="slides-button">
+                <i class="material-icons">add_box</i>
+            </div>
+        </div>
+        <div id="editor">
+            <div id="slide">
+                <!-- <div class="element">
+                    <div class="element-editor" contenteditable="true">
+                        <div>
+                            <span></span>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
     </main>
     <script defer src='./../../dist/renderers/slideCreator.js'></script>
 </body>

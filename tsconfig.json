@@ -11,7 +11,8 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
-    "lib": ["DOM"]
+    "lib": ["DOM", "DOM.Iterable"],
+    "downlevelIteration": true,
   },
   "include": [
     "src/**/*"

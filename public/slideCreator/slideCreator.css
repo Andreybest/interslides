@@ -20,19 +20,21 @@ header {
     align-items: center;
 }
 
-.material-icons {
-    color: #EBF2FA;
-    cursor: pointer;
+header div {
+    margin: 10px;
+}
+
+header .material-icons {
     font-size: 32px;
     margin-left: 5px;
 }
 
-.material-icons:hover {
+header .material-icons:hover {
     border-radius: 10%;
     background-color: #70BDF0;
 }
 
-.material-icons:active {
+header .material-icons:active {
     border-radius: 10%;
     background-color: #56a7eb;
 }
@@ -46,18 +48,146 @@ main {
     align-items: center;
 }
 
-slides {
+#slides {
     width: 300px;
     height: 100%;
+    background-color: #1F271B;
 }
 
-editor {
-    background-color: red;
+#slides-container {
     width: 100%;
-    height: 100%;
+    height: auto;
+}
+
+.slide {
+    border-radius: 5px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    height: 117px;
+    cursor: pointer;
+    /* height: calc((100%) * 0.5625); */
+}
+
+.slide-count {
+    width: 20%;
+    max-width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.slide-preview-wrapper {
+    width: 80%;
+    border: 1px;
     position: relative;
 }
 
-.element {
+.slide-preview {
+    width: 100%;
+    height: 100%;
+}
+
+.material-icons {
+    color: #EBF2FA;
+    cursor: pointer;
+}
+
+#change-local-remote-slides {
+    margin-top: 10px;
+}
+
+.slides-button {
+    border-radius: 5px;
+    cursor: pointer;
+    width: auto;
+    height: 40px;
+    margin: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slide:hover, .slide.active, .slides-button:hover {
+    background-color: #4B5248;
+}
+
+.slide:active, .slides-button:active {
+    background-color: #353C31;
+}
+
+.slides-button .material-icons {
+    font-size: 30px;
+}
+
+#editor {
+    width: 100%;
+    height: 100%;
+    background-color: #EBF2FA;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: overlay;
+}
+
+#slide {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background-color: white;
+    margin: 15px;
+}
+
+.slide-wrapper {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+#editor .element {
     user-select: text;
+}
+
+.element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-overflow: clip;
+    overflow: visible;
+    width: 30%;
+    height: 20%;
+}
+
+.element.active {
+    border: 1px solid gray;
+}
+
+.element .resizer {
+    border: 1px solid black;
+    width: 7px;
+    height: 7px;
+    background: white;
+    z-index: 10;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: nw-resize;
+}
+
+.element .mover {
+    border: 1px solid black;
+    width: 7px;
+    height: 7px;
+    background: white;
+    z-index: 10;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    cursor: move;
+}
+
+.element-editor div {
+    display: block;
 }
