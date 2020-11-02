@@ -12,3 +12,66 @@ iframe {
     height: 100vh;
     border-width: 0;
 }
+
+.qr-code-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    animation-name: fadeIn;
+    animation-duration: 0.5s
+}
+
+.qr-code-modal-content {
+    position: fixed;
+    bottom: 0;
+    background-color: #fefefe;
+    width: 100%;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}
+
+.qr-code-modal-header {
+    padding: 2px 16px;
+    background-color: #3C91E6;
+    color: white;
+}
+  
+.qr-code-modal-body {
+    padding: 2px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#qr-code-canvas {
+    width: 500px !important;
+    height: 500px !important;
+}
+
+.qr-code-modal-close-button {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.qr-code-modal-close-button:hover, .qr-code-modal-close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}

@@ -2,6 +2,7 @@ import * as express from 'express';
 // eslint-disable-next-line no-unused-vars
 import { createServer, Server } from 'http';
 import * as socketIO from 'socket.io';
+import { get_private_ip } from 'network';
 
 export default class WebServer {
   port: number = 80;
@@ -34,6 +35,12 @@ export default class WebServer {
       respose.send(localHtmlLink);
     });
 
+    this.app.get('/localIp', async (request, response) => {
+      const ip = await WebServer.getLocalIpAddress();
+      if (ip) response.send(`http://${ip}`);
+      else response.status(404).send('Local IP not found');
+    });
+
     this.server.listen(this.port);
 
     this.io.on('connect', (socket: SocketIO.Socket) => {
@@ -49,5 +56,14 @@ export default class WebServer {
 
   closeWebServer(): void {
     this.server.close();
+  }
+
+  private static getLocalIpAddress(): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      get_private_ip((error, ip) => {
+        if (error) resolve(undefined);
+        else resolve(ip as string);
+      });
+    });
   }
 }

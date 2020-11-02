@@ -8,7 +8,22 @@
     <link rel='stylesheet' type='text/css' media='screen' href='presentationLocal.css'>
 </head>
 <body>
+    <div class="qr-code-modal">
+        <div class="qr-code-modal-content">
+          <div class="qr-code-modal-header">
+            <span class="qr-code-modal-close-button">&times;</span>
+            <h1>
+                Presentation will start soon, join as a viewer with this qr-code! <br>
+                Make sure you are on the same wi-fi network as a presenter!
+            </h1>
+          </div>
+          <div class="qr-code-modal-body">
+            <canvas id="qr-code-canvas" width="500" height="500"></canvas>
+          </div>
+        </div>
+    </div>
     <script src="http://localhost:80/socket.io/socket.io.js"></script>
+    <script src="../../node_modules/qrcode/build/qrcode.min.js"></script>
     <script defer src='./../../dist/renderers/presentationLocal.js'></script>
 </body>
 </html>
