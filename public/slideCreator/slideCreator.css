@@ -194,3 +194,8 @@ main {
 .element-editor div {
     display: block;
 }
+
+.element img {
+    width: 100%;
+    height: 100%;
+}

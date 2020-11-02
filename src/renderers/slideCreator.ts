@@ -41,8 +41,7 @@ function onControlButtonClick(event: MouseEvent, buttonName: string) {
       createTextElement();
       break;
     case 'image-add':
-      // TO-DO!
-      alert('TO-DO!');
+      (window as any).api.addImage();
       break;
     case 'delete-element':
       deleteSelectedElement();
@@ -101,8 +100,45 @@ controlButtons.forEach((button, buttonName) => {
   button.onclick = (event) => onControlButtonClick(event, buttonName);
 });
 
+(window as any).api.onAddImage(createImageElement);
 
 const slideElement = document.getElementById('slide') as HTMLDivElement;
+
+const editorElement = document.getElementById('editor') as HTMLDivElement;
+
+
+// Images
+// You can add images to presentation with button, drag n drop,
+// or Ctrl+V (only screenshots, for some reason on file event is not firing)
+
+function isDataImage(data: DataTransferItem | File): boolean {
+  if (data.type === 'image/png' || data.type === 'image/jpeg') return true;
+  return false;
+}
+
+function insertPastedImages(dataTransfer: DataTransfer) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const image of dataTransfer.files) {
+    if (isDataImage(image)) createImageElement(image);
+  }
+}
+
+editorElement.ondragover = (event) => {
+  if (event.dataTransfer) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const data of event.dataTransfer.items) {
+      if (isDataImage(data)) event.preventDefault();
+    }
+  }
+};
+
+editorElement.ondrop = (event) => {
+  if (event.dataTransfer) insertPastedImages(event.dataTransfer);
+};
+
+document.onpaste = (event) => {
+  if (event.clipboardData) insertPastedImages(event.clipboardData);
+};
 
 function initDragElement(element: HTMLElement) {
   let pos1 = 0;
@@ -215,20 +251,20 @@ function createTextElementInsideElement(): HTMLDivElement {
   return div;
 }
 
-function addOnClickEventToTextElement(textElement: HTMLElement) {
+function addOnClickEventToElement(element: HTMLElement) {
   // eslint-disable-next-line no-param-reassign
-  textElement.onclick = (event) => {
+  element.onclick = (event) => {
     event.preventDefault();
-    if (selectedElement !== textElement) {
+    if (selectedElement !== element) {
       if (selectedElement) {
         removeControlElements(selectedElement);
       }
       saveSlideInformation(currentSlideNumber, currentSlides);
       redrawSlidePreviews(currentSlides, currentSlideNumber);
-      initResizeElement(textElement);
-      initDragElement(textElement);
-      textElement.classList.add('active');
-      selectedElement = textElement;
+      initResizeElement(element);
+      initDragElement(element);
+      element.classList.add('active');
+      selectedElement = element;
     }
   };
 }
@@ -246,8 +282,38 @@ function createTextElement() {
   textContainer.appendChild(createTextElementInsideElement());
   element.appendChild(textContainer);
   slideElement.getElementsByClassName('slide-wrapper')[0].appendChild(element);
-  addOnClickEventToTextElement(element);
+  addOnClickEventToElement(element);
 }
+
+function createImageElement(pathToImage: string | File) {
+  const element = document.createElement('div');
+  element.className = 'element';
+  element.style.top = '0%';
+  element.style.left = '0%';
+  const imageManipulator = new Image();
+  imageManipulator.onload = () => {
+    element.style.width = `${(imageManipulator.naturalWidth / slideElement.clientWidth) * 100}%`;
+    element.style.height = `${(imageManipulator.naturalHeight / slideElement.clientHeight) * 100}%`;
+    const canvasImageManipulator = document.createElement('canvas');
+    canvasImageManipulator.height = imageManipulator.naturalHeight;
+    canvasImageManipulator.width = imageManipulator.naturalWidth;
+    const ctx = canvasImageManipulator.getContext('2d') as CanvasRenderingContext2D;
+    ctx.drawImage(imageManipulator, 0, 0);
+    const imageElement = document.createElement('img');
+    imageElement.src = canvasImageManipulator.toDataURL('image/png');
+    element.appendChild(imageElement);
+    slideElement.getElementsByClassName('slide-wrapper')[0].appendChild(element);
+    addOnClickEventToElement(element);
+  };
+  if (typeof pathToImage === 'string') {
+    imageManipulator.src = pathToImage;
+  } else {
+    imageManipulator.src = window.URL.createObjectURL(pathToImage);
+  }
+  
+}
+
+(window as any).createImageElement = createImageElement;
 
 function deleteSelectedElement() {
   if (selectedElement) {
@@ -354,8 +420,9 @@ function fillSlideElementWithSavedSlideTags(slideNumber: number) {
   slideElement.innerHTML = currentSlides.get(slideNumber) as string;
   // eslint-disable-next-line no-restricted-syntax
   for (const element of slideElement.getElementsByClassName('element') as HTMLCollectionOf<HTMLDivElement>) {
-    addOnClickEventToTextElement(element);
-    (element.getElementsByClassName('element-editor')[0] as HTMLDivElement).contentEditable = 'true';
+    addOnClickEventToElement(element);
+    const elementEditor = element.getElementsByClassName('element-editor')[0] as HTMLDivElement | undefined;
+    if (elementEditor) elementEditor.contentEditable = 'true';
   }
 }
 

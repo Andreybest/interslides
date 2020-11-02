@@ -6,6 +6,7 @@ import Archive from './Archive';
 import removeDirectory from './removeDirectory';
 import copyFolder from './copyFolder';
 import fillHtmlFile from './fillHtmlFile';
+import copyFiles from './copyFiles';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -99,12 +100,10 @@ app.on('ready', () => {
   createWindow();
 });
 
-function openFile(window: BrowserWindow): Promise<Electron.OpenDialogReturnValue> {
+function openFile(window: BrowserWindow, filters?: Electron.FileFilter[]): Promise<Electron.OpenDialogReturnValue> {
   return dialog.showOpenDialog(window, {
     properties: ['openFile'],
-    filters: [
-      { name: 'InterSlides file', extensions: ['is'] },
-    ],
+    filters: filters,
   });
 }
 
@@ -114,13 +113,17 @@ async function loadRemoteTempFiles(): Promise<void> {
 
 ipcMain.on('new-file', async () => {
   if (mainWindow) {
+    removeTempFiles();
+    await copyFolder('./public/slides-template', `${app.getPath('temp')}/${tempFolderName}/presentation`);
     createSlideCreationWindow();
   }
 });
 
 ipcMain.on('open-file', async () => {
   if (mainWindow) {
-    const file = await openFile(mainWindow);
+    const file = await openFile(mainWindow, [
+      { name: 'InterSlides file', extensions: ['is'] },
+    ]);
     if (file.filePaths.length > 0) {
       const tempFolder = `${app.getPath('temp')}/${tempFolderName}`;
       try {
@@ -156,11 +159,21 @@ ipcMain.on('save-as', async (_, slides: [Map<number, string>, Map<number, string
   if (path.canceled) return;
 
   const tempFolder = `${app.getPath('temp')}/${tempFolderName}/presentation`;
-  removeTempFiles();
-  await copyFolder('./public/slides-template', tempFolder);
+  await copyFiles(['./public/slides-template/local.html', `${tempFolder}/local.html`], ['./public/slides-template/remote.html', `${tempFolder}/remote.html`]);
   fillHtmlFile(`${tempFolder}/local.html`, slides[0]);
   fillHtmlFile(`${tempFolder}/remote.html`, slides[1]);
   await Archive.saveFolderAsArchive(tempFolder, path.filePath as string);
+});
+
+ipcMain.on('add-image', async (event) => {
+  const image = await openFile(slideCreationWindow as BrowserWindow, [
+    { name: 'JPEG', extensions: ['jpg', 'jpeg'] },
+    { name: 'PNG', extensions: ['png'] },
+  ]);
+  
+  if (image.filePaths.length > 0) {
+    event.sender.send('add-image', image.filePaths[0]);
+  }
 });
 
 ipcMain.on('close-presentation-window', () => presentationWindow?.close());
