@@ -8,8 +8,12 @@ import { ipcRenderer } from 'electron';
 
 (window as any).api.addImage = () => {
   ipcRenderer.send('add-image');
-}
+};
 
 (window as any).api.onAddImage = (listener: (imagePath: string) => any) => {
   ipcRenderer.on('add-image', (_, ...args) => listener(args[0]));
-}
+};
+
+(window as any).api.toggleDevTools = () => {
+  ipcRenderer.send('toggle-devtools');
+};

@@ -86,6 +86,11 @@ function onControlButtonClick(event: MouseEvent, buttonName: string) {
     case 'align-right':
       document.execCommand('justifyRight');
       break;
+
+    case 'toggle-devtools':
+      (window as any).api.toggleDevTools();
+      break;
+
     default:
       break;
   }

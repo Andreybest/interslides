@@ -63,8 +63,6 @@ function createSlideCreationWindow(): void {
 
   slideCreationWindow.center();
 
-  slideCreationWindow.webContents.openDevTools();
-
   // slideCreationWindow.maximize();
 
   slideCreationWindow.on('close', () => {
@@ -175,6 +173,10 @@ ipcMain.on('add-image', async (event) => {
     event.sender.send('add-image', image.filePaths[0]);
   }
 });
+
+ipcMain.on('toggle-devtools', async () => {
+  slideCreationWindow?.webContents.toggleDevTools();
+})
 
 ipcMain.on('close-presentation-window', () => presentationWindow?.close());
 
