@@ -17,6 +17,8 @@ let mainWindow: BrowserWindow | null;
 let slideCreationWindow: BrowserWindow | null;
 let presentationWindow: BrowserWindow | null;
 
+let appPath: string;
+
 let server: WebServer;
 
 const tempFolderName = 'interslides';
@@ -31,11 +33,11 @@ function createWindow(): void {
     maxHeight: 1200,
     minHeight: 550,
     webPreferences: {
-      preload: `${__dirname}/../dist/preloaders/index.js`,
+      preload: `${appPath}/dist/preloaders/index.js`,
     },
   });
 
-  mainWindow.loadURL(`file://${__dirname}/../public/menu/index.html`);
+  mainWindow.loadURL(`file://${appPath}/public/menu/index.html`);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -55,11 +57,11 @@ function createSlideCreationWindow(): void {
     height: 600,
     minHeight: 400,
     webPreferences: {
-      preload: `${__dirname}/../dist/preloaders/slideCreator.js`,
+      preload: `${appPath}/dist/preloaders/slideCreator.js`,
     },
   });
 
-  slideCreationWindow.loadURL(`file://${__dirname}/../public/slideCreator/slideCreator.html`);
+  slideCreationWindow.loadURL(`file://${appPath}/public/slideCreator/slideCreator.html`);
 
   slideCreationWindow.center();
 
@@ -80,11 +82,11 @@ function createPresentationWindow(): void {
     frame: false,
     fullscreen: true,
     webPreferences: {
-      preload: `${__dirname}/../dist/preloaders/presentationLocal.js`,
+      preload: `${appPath}/dist/preloaders/presentationLocal.js`,
     },
   });
 
-  presentationWindow.loadURL(`file://${__dirname}/../public/presentationLocal/presentationLocal.html`);
+  presentationWindow.loadURL(`file://${appPath}/public/presentationLocal/presentationLocal.html`);
 
   presentationWindow.on('close', () => {
     server.closeWebServer();
@@ -94,6 +96,7 @@ function createPresentationWindow(): void {
 }
 
 app.on('ready', () => {
+  appPath = app.getAppPath();
   Menu.setApplicationMenu(null);
   createWindow();
 });
@@ -106,13 +109,13 @@ function openFile(window: BrowserWindow, filters?: Electron.FileFilter[]): Promi
 }
 
 async function loadRemoteTempFiles(): Promise<void> {
-  await copyFolder('./public/presentationRemote', `${app.getPath('temp')}/${tempFolderName}`);
+  await copyFolder(`${appPath}/public/presentationRemote`, `${app.getPath('temp')}/${tempFolderName}`);
 }
 
 ipcMain.on('new-file', async () => {
   if (mainWindow) {
     removeTempFiles();
-    await copyFolder('./public/slides-template', `${app.getPath('temp')}/${tempFolderName}/presentation`);
+    await copyFolder(`${appPath}/public/slides-template`, `${app.getPath('temp')}/${tempFolderName}/presentation`);
     createSlideCreationWindow();
   }
 });
@@ -157,7 +160,7 @@ ipcMain.on('save-as', async (_, slides: [Map<number, string>, Map<number, string
   if (path.canceled) return;
 
   const tempFolder = `${app.getPath('temp')}/${tempFolderName}/presentation`;
-  await copyFiles(['./public/slides-template/local.html', `${tempFolder}/local.html`], ['./public/slides-template/remote.html', `${tempFolder}/remote.html`]);
+  await copyFiles([`${appPath}/public/slides-template/local.html`, `${tempFolder}/local.html`], [`${appPath}/public/slides-template/remote.html`, `${tempFolder}/remote.html`]);
   fillHtmlFile(`${tempFolder}/local.html`, slides[0]);
   fillHtmlFile(`${tempFolder}/remote.html`, slides[1]);
   await Archive.saveFolderAsArchive(tempFolder, path.filePath as string);
