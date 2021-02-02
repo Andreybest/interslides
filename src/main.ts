@@ -87,11 +87,13 @@ function createPresentationWindow(): void {
   });
 
   presentationWindow.loadURL(`file://${appPath}/public/presentationLocal/presentationLocal.html`);
+  presentationWindow.webContents.openDevTools();
 
   presentationWindow.on('close', () => {
     server.closeWebServer();
     removeTempFiles();
-    if (mainWindow) mainWindow.show();
+    if (slideCreationWindow) {}
+    else if (mainWindow) mainWindow.show();
   });
 }
 
@@ -166,6 +168,25 @@ ipcMain.on('save-as', async (_, slides: [Map<number, string>, Map<number, string
   await Archive.saveFolderAsArchive(tempFolder, path.filePath as string);
 });
 
+ipcMain.on('preview-presentation', async (_, slides: [Map<number, string>, Map<number, string>]) => {
+  await copyFolder(`${appPath}/public/slides-template`, `${app.getPath('temp')}/${tempFolderName}/presentation`);
+  const tempFolder = `${app.getPath('temp')}/${tempFolderName}`;
+  const presentationFolder = `${tempFolder}/presentation`;
+  await copyFiles([`${appPath}/public/slides-template/local.html`, `${presentationFolder}/local.html`], [`${appPath}/public/slides-template/remote.html`, `${presentationFolder}/remote.html`]);
+  fillHtmlFile(`${presentationFolder}/local.html`, slides[0]);
+  fillHtmlFile(`${presentationFolder}/remote.html`, slides[1]);
+  await loadRemoteTempFiles();
+
+  try {
+    server = new WebServer();
+    server.createWebServer(`${presentationFolder}/${Archive.remoteFileName}`, `${tempFolder}/presentationRemote.html`, `${presentationFolder}/${Archive.localFileName}`);
+  } catch (error) {
+    dialog.showMessageBox(mainWindow as BrowserWindow, { message: (error as Error).message });
+  }
+
+  createPresentationWindow();
+})
+
 ipcMain.on('add-image', async (event) => {
   const image = await openFile(slideCreationWindow as BrowserWindow, [
     { name: 'JPEG', extensions: ['jpg', 'jpeg'] },
@@ -199,3 +220,11 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+process.on('uncaughtException', (error) => {
+  dialog.showMessageBox(mainWindow as BrowserWindow, { message: (error as Error).message, type: 'error' });
+})
+
+process.on('unhandledRejection', (error) => {
+  dialog.showMessageBox(mainWindow as BrowserWindow, { message: (error as Error).message, type: 'error' });
+})

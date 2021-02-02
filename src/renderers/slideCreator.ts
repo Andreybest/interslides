@@ -36,6 +36,10 @@ function onControlButtonClick(event: MouseEvent, buttonName: string) {
       saveSlideInformation(currentSlideNumber, currentSlides);
       (window as any).api.saveAs(slidesLocal, slidesRemote);
       break;
+    case 'preview-presentation':
+      saveSlideInformation(currentSlideNumber, currentSlides);
+      (window as any).api.previewPresentation(slidesLocal, slidesRemote);
+      break;
 
     case 'text-add':
       createTextElement();

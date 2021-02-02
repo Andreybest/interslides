@@ -17,3 +17,7 @@ import { ipcRenderer } from 'electron';
 (window as any).api.toggleDevTools = () => {
   ipcRenderer.send('toggle-devtools');
 };
+
+(window as any).api.previewPresentation = (slidesLocal: Map<number, string>, slidesRemote: Map<number, string>) => {
+  ipcRenderer.send('preview-presentation', [slidesLocal, slidesRemote]);
+};
