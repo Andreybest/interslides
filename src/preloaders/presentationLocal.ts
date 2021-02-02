@@ -1,7 +1,7 @@
-import { ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-(window as any).api = {};
-
-(window as any).api.closeWindow = () => {
-  ipcRenderer.send('close-presentation-window');
-};
+contextBridge.exposeInMainWorld('api', {
+  closeWindow: () => {
+    ipcRenderer.send('close-presentation-window');
+  },
+});

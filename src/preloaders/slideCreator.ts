@@ -1,23 +1,19 @@
-import { ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-(window as any).api = {};
-
-(window as any).api.saveAs = (slidesLocal: Map<number, string>, slidesRemote: Map<number, string>) => {
-  ipcRenderer.send('save-as', [slidesLocal, slidesRemote]);
-};
-
-(window as any).api.addImage = () => {
-  ipcRenderer.send('add-image');
-};
-
-(window as any).api.onAddImage = (listener: (imagePath: string) => any) => {
-  ipcRenderer.on('add-image', (_, ...args) => listener(args[0]));
-};
-
-(window as any).api.toggleDevTools = () => {
-  ipcRenderer.send('toggle-devtools');
-};
-
-(window as any).api.previewPresentation = (slidesLocal: Map<number, string>, slidesRemote: Map<number, string>) => {
-  ipcRenderer.send('preview-presentation', [slidesLocal, slidesRemote]);
-};
+contextBridge.exposeInMainWorld('api', {
+  saveAs: (slidesLocal: Map<number, string>, slidesRemote: Map<number, string>) => {
+    ipcRenderer.send('save-as', [slidesLocal, slidesRemote]);
+  },
+  addImage: () => {
+    ipcRenderer.send('add-image');
+  },
+  onAddImage: (listener: (imagePath: string) => any) => {
+    ipcRenderer.on('add-image', (_, ...args) => listener(args[0]));
+  },
+  toggleDevTools: () => {
+    ipcRenderer.send('toggle-devtools');
+  },
+  previewPresentation: (slidesLocal: Map<number, string>, slidesRemote: Map<number, string>) => {
+    ipcRenderer.send('preview-presentation', [slidesLocal, slidesRemote]);
+  },
+});

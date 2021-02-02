@@ -1,11 +1,10 @@
-import { ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-(window as any).api = {};
-
-(window as any).api.openFile = () => {
-  ipcRenderer.send('open-file');
-};
-
-(window as any).api.newFile = () => {
-  ipcRenderer.send('new-file');
-};
+contextBridge.exposeInMainWorld('api', {
+  openFile: () => {
+    ipcRenderer.send('open-file');
+  },
+  newFile: () => {
+    ipcRenderer.send('new-file');
+  },
+});

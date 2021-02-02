@@ -33,6 +33,8 @@ function createWindow(): void {
     maxHeight: 1200,
     minHeight: 550,
     webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: `${appPath}/dist/preloaders/index.js`,
     },
   });
@@ -57,6 +59,8 @@ function createSlideCreationWindow(): void {
     height: 600,
     minHeight: 400,
     webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: `${appPath}/dist/preloaders/slideCreator.js`,
     },
   });
@@ -82,12 +86,13 @@ function createPresentationWindow(): void {
     frame: false,
     fullscreen: true,
     webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: `${appPath}/dist/preloaders/presentationLocal.js`,
     },
   });
 
   presentationWindow.loadURL(`file://${appPath}/public/presentationLocal/presentationLocal.html`);
-  presentationWindow.webContents.openDevTools();
 
   presentationWindow.on('close', () => {
     server.closeWebServer();
