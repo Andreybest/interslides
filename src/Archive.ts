@@ -6,9 +6,9 @@ import { dirname } from 'path';
 export default class Archive {
   archive: JSZip;
 
-  public static localFileName = 'local.html';
+  public static localFileName = 'local.html' as const;
 
-  public static remoteFileName = 'remote.html';
+  public static remoteFileName = 'remote.html' as const;
 
   public async loadFile(fileURL: string) {
     const data = readFileSync(fileURL);
@@ -18,7 +18,7 @@ export default class Archive {
   }
 
   private static checkForAllRequiredFiles(archive: JSZip): boolean {
-    const requiredFiles = [this.localFileName, this.remoteFileName];
+    const requiredFiles: string[] = [this.localFileName, this.remoteFileName];
     const filtered = archive.filter((_path, file) => requiredFiles.includes(file.name));
     if (filtered.length === requiredFiles.length) return true;
     return false;

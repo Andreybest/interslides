@@ -18,7 +18,11 @@ export default class WebServer {
     this.server = createServer(this.app);
   }
 
-  createWebServer(remoteHtmlLink: string, remoteIframeLink: string, localHtmlLink: string): void {
+  public createWebServer({ remoteHtmlLink, remoteIframeLink, localHtmlLink }: {
+    remoteHtmlLink: string,
+    remoteIframeLink: string,
+    localHtmlLink: string,
+  }): void {
     this.io = socketIO(this.server);
 
     this.app.use(express.static(`${remoteIframeLink}/..`));
