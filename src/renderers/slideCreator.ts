@@ -6,6 +6,111 @@ let currentSlides = slidesLocal;
 let currentMode: 'local' | 'remote' = 'local';
 let currentSlideNumber = 0;
 
+// @ts-ignore
+// eslint-disable-next-line no-undef
+const fontColorPicker = Pickr.create({
+  el: '.font-change-color',
+  theme: 'monolith',
+  useAsButton: true,
+
+  swatches: [
+    'rgba(244, 67, 54, 1)',
+    'rgba(233, 30, 99, 1)',
+    'rgba(156, 39, 176, 1)',
+    'rgba(103, 58, 183, 1)',
+    'rgba(63, 81, 181, 1)',
+    'rgba(33, 150, 243, 1)',
+    'rgba(3, 169, 244, 1)',
+    'rgba(0, 188, 212, 1)',
+    'rgba(0, 150, 136, 1)',
+    'rgba(76, 175, 80, 1)',
+    'rgba(139, 195, 74, 1)',
+    'rgba(205, 220, 57, 1)',
+    'rgba(255, 235, 59, 1)',
+    'rgba(255, 193, 7, 1)',
+  ],
+
+  components: {
+
+    // Main components
+    preview: true,
+    opacity: false,
+    hue: true,
+
+    // Input / output Options
+    interaction: {
+      hex: true,
+      rgba: true,
+      hsla: true,
+      hsva: true,
+      cmyk: true,
+      input: true,
+      clear: true,
+      save: true,
+    },
+  },
+});
+
+fontColorPicker.on('save', (color: any) => {
+  if (!color) return;
+  document.execCommand('forecolor', false, color.toHEXA().toString());
+  saveSlideInformation(currentSlideNumber, currentSlides);
+});
+
+// @ts-ignore
+// eslint-disable-next-line no-undef
+const backgroundColorPicker = Pickr.create({
+  el: '.background-change-color',
+  theme: 'monolith',
+  useAsButton: true,
+
+  swatches: [
+    'rgba(244, 67, 54, 1)',
+    'rgba(233, 30, 99, 1)',
+    'rgba(156, 39, 176, 1)',
+    'rgba(103, 58, 183, 1)',
+    'rgba(63, 81, 181, 1)',
+    'rgba(33, 150, 243, 1)',
+    'rgba(3, 169, 244, 1)',
+    'rgba(0, 188, 212, 1)',
+    'rgba(0, 150, 136, 1)',
+    'rgba(76, 175, 80, 1)',
+    'rgba(139, 195, 74, 1)',
+    'rgba(205, 220, 57, 1)',
+    'rgba(255, 235, 59, 1)',
+    'rgba(255, 193, 7, 1)',
+  ],
+
+  components: {
+
+    // Main components
+    preview: true,
+    opacity: false,
+    hue: true,
+
+    // Input / output Options
+    interaction: {
+      hex: true,
+      rgba: true,
+      hsla: true,
+      hsva: true,
+      cmyk: true,
+      input: true,
+      clear: true,
+      save: true,
+    },
+  },
+});
+
+backgroundColorPicker.on('save', (color: any) => {
+  if (!color) return;
+  const rgbaColor = color.toRGBA().toString();
+  const section = slideElement.getElementsByTagName('section')[0];
+  section.dataset.backgroundColor = rgbaColor;
+  section.style.backgroundColor = rgbaColor;
+  saveSlideInformation(currentSlideNumber, currentSlides);
+});
+
 function filterClasses(element: HTMLElement, ...classesToFilter: string[]): string {
   // eslint-disable-next-line max-len
   return Array.from(element.classList).find((className) => (!classesToFilter.includes(className))) as string;
@@ -56,6 +161,12 @@ function onControlButtonClick(event: MouseEvent, buttonName: string) {
       break;
     case 'font-decrease':
       decreaseFontSizeOfSelectedText();
+      break;
+    case 'font-change-color':
+      // See fontColorPicker above
+      break;
+    case 'background-change-color':
+      // See backgroundColorPicker above
       break;
     case 'font-bold':
       document.execCommand('bold');
@@ -345,14 +456,16 @@ slideElement.onclick = (event) => {
   }
 };
 
-window.onresize = () => {
+function resizeFont() {
   slideElement.style.fontSize = `${slideElement.clientWidth / 100}px`;
   const slidePreviews = document.getElementsByClassName('slide-preview') as HTMLCollectionOf<HTMLDivElement>;
   // eslint-disable-next-line no-restricted-syntax
   for (const slidePreview of slidePreviews) {
     slidePreview.style.fontSize = `${slidePreview.clientWidth / 100}px`;
   }
-};
+}
+
+window.onresize = resizeFont;
 
 function saveSlideInformation(slideNumber: number, slides: Slides) {
   const divManipulator = document.createElement('div');
@@ -364,6 +477,9 @@ function saveSlideInformation(slideNumber: number, slides: Slides) {
   for (const elementEditor of elementEditors) {
     elementEditor.contentEditable = 'false';
   }
+
+  const section = divManipulator.getElementsByTagName('section')[0];
+  if (section) section.style.backgroundColor = '';
 
   slides.set(slideNumber, divManipulator.innerHTML);
 }
@@ -410,6 +526,9 @@ function redrawSlidePreviews(slides: Slides, activeSlideNumber: number) {
     slidePreview.id = `slide-preview-${i}`;
     slidePreview.innerHTML = slides.get(i) as string;
 
+    const section = slidePreview.getElementsByTagName('section')[0];
+    section.style.backgroundColor = section.dataset.backgroundColor ? section.dataset.backgroundColor : '';
+
     slidePreviewWrapper.appendChild(slidePreview);
     slide.appendChild(slideCount);
     slide.appendChild(slidePreviewWrapper);
@@ -433,6 +552,9 @@ function fillSlideElementWithSavedSlideTags(slideNumber: number) {
     const elementEditor = element.getElementsByClassName('element-editor')[0] as HTMLDivElement | undefined;
     if (elementEditor) elementEditor.contentEditable = 'true';
   }
+
+  const section = slideElement.getElementsByTagName('section')[0];
+  section.style.backgroundColor = section.dataset.backgroundColor ? section.dataset.backgroundColor : '';
 }
 
 function clearSlideElement() {
@@ -505,3 +627,4 @@ addSlideButton.onclick = (event) => {
 };
 
 createSlide(0);
+resizeFont();

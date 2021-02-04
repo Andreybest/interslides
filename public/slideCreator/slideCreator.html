@@ -6,13 +6,14 @@
     <title>Slide Creator</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link href="../../node_modules/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./../../node_modules/@simonwep/pickr/dist/themes/monolith.min.css">
     <link rel='stylesheet' type='text/css' href='slideCreator.css'>
 </head>
 <body>
     <header>
         <div>
             <i alt="Save" title="Save" class="material-icons save">save</i>
-            <i alt="Save" title="Save" class="material-icons preview-presentation">slideshow</i>
+            <i alt="Preview" title="Preview" class="material-icons preview-presentation">slideshow</i>
         </div>
         <div>
             <i alt="Add text-field" title="Add text-field" class="material-icons text-add">title</i>
@@ -22,6 +23,8 @@
         <div>
             <i alt="Increase font size" title="Increase font size" class="material-icons font-increase">format_size</i>
             <i alt="Decrease font size" title="Decrease font size" class="material-icons font-decrease">text_fields</i>
+            <i alt="Change text color" title="Change text color" class="material-icons font-change-color">format_color_text</i>
+            <i alt="Change background color" title="Change background color" class="material-icons background-change-color">format_paint</i>
             <i alt="Bold font" title="Bold font" class="material-icons font-bold">format_bold</i>
             <i alt="Italic font" title="Italic font" class="material-icons font-italic">format_italic</i>
             <i alt="Underlined font" title="Underlined font" class="material-icons font-underlined">format_underlined</i>
@@ -70,6 +73,7 @@
             </div>
         </div>
     </main>
+    <script src="./../../node_modules/@simonwep/pickr/dist/pickr.min.js"></script>
     <script defer src='./../../dist/renderers/slideCreator.js'></script>
 </body>
 </html>
