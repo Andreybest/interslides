@@ -1,14 +1,17 @@
-$('#carousel').slick({
-  dots: false,
-  infinite: true,
-  speed: 300,
-  slidesToShow: 1,
-  adaptiveHeight: true,
-  arrows: false,
-  accessibility: false,
+// eslint-disable-next-line no-undef
+Reveal.initialize({
+  controls: false,
+  keyboard: false,
+  embedded: true,
+  disableLayout: true,
 });
 
-window.onresize = () => {
-  const carousel = document.getElementById('carousel');
-  carousel.style.fontSize = `${carousel.clientWidth / 100}px`;
+const slidesWrapper = document.getElementsByClassName('reveal')[0];
+
+const resizeFont = () => {
+  slidesWrapper.style.fontSize = `${slidesWrapper.clientWidth / 100}px`;
 };
+
+window.onresize = resizeFont;
+
+resizeFont();

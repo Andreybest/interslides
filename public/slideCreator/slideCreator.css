@@ -142,7 +142,7 @@ main {
     margin: 15px;
 }
 
-.slide-wrapper {
+section {
     position: absolute;
     top: 0;
     left: 0;

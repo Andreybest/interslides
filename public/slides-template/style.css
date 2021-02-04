@@ -19,35 +19,23 @@ main {
     align-items: center;
 }
 
-#carousel-wrapper {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%;
-}
-
-#carousel {
-    position: absolute;
+#slides-wrapper {
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.slick-list {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100% !important;
-    width: 100%;
+.reveal {
+    width: 100vw; 
+    height: 56.25vw;
+    max-height: 100vh;
+    max-width: 177.78vh; /* 16/9 = 1.778 */
+    text-align: left;
 }
 
-.slick-track {
-    height: 100%;
-}
-
-
-
-.slide-wrapper {
+section {
     position: relative;
     top: 0;
     left: 0;
@@ -64,9 +52,23 @@ main {
     overflow: visible;
     width: 30%;
     height: 20%;
+    text-align: left;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .element img {
     width: 100%;
     height: 100%;
+    margin: 0;
+}
+
+.element big {
+    font-size: larger;
+}
+
+.element small {
+    font-size: smaller !important;
+    display: inline !important;
+    vertical-align: baseline !important;
+    line-height: inherit !important;
 }

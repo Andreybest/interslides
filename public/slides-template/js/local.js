@@ -1,11 +1,12 @@
-$(document).keydown((event) => {
+document.onkeydown = (event) => {
+  event.preventDefault();
   if (event.key === 'ArrowRight') {
-    $('#carousel').slick('slickNext');
+    Reveal.right();
     window.parent.postMessage('next-slide', '*');
   } else if (event.key === 'ArrowLeft') {
-    $('#carousel').slick('slickPrev');
+    Reveal.left();
     window.parent.postMessage('previous-slide', '*');
   }
 
   window.parent.keydown(event);
-});
+};

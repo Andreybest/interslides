@@ -290,7 +290,7 @@ function createTextElement() {
   textContainer.contentEditable = 'true';
   textContainer.appendChild(createTextElementInsideElement());
   element.appendChild(textContainer);
-  slideElement.getElementsByClassName('slide-wrapper')[0].appendChild(element);
+  slideElement.getElementsByTagName('section')[0].appendChild(element);
   addOnClickEventToElement(element);
 }
 
@@ -311,7 +311,7 @@ function createImageElement(pathToImage: string | File) {
     const imageElement = document.createElement('img');
     imageElement.src = canvasImageManipulator.toDataURL('image/png');
     element.appendChild(imageElement);
-    slideElement.getElementsByClassName('slide-wrapper')[0].appendChild(element);
+    slideElement.getElementsByTagName('section')[0].appendChild(element);
     addOnClickEventToElement(element);
   };
   if (typeof pathToImage === 'string') {
@@ -329,7 +329,7 @@ function deleteSelectedElement() {
     selectedElement.onclick = null;
     (selectedElement.getElementsByClassName('resizer')[0] as HTMLDivElement).onmousedown = null;
     (selectedElement.getElementsByClassName('mover')[0] as HTMLDivElement).onmousedown = null;
-    slideElement.getElementsByClassName('slide-wrapper')[0].removeChild(selectedElement);
+    slideElement.getElementsByTagName('section')[0].removeChild(selectedElement);
     selectedElement = undefined;
   }
 }
@@ -424,7 +424,7 @@ function redrawSlidePreviews(slides: Slides, activeSlideNumber: number) {
 }
 
 function fillSlideElementWithSavedSlideTags(slideNumber: number) {
-  const slideWrapper = slideElement.getElementsByClassName('slide-wrapper')[0];
+  const slideWrapper = slideElement.getElementsByTagName('section')[0];
   slideElement.removeChild(slideWrapper);
   slideElement.innerHTML = currentSlides.get(slideNumber) as string;
   // eslint-disable-next-line no-restricted-syntax
@@ -437,8 +437,7 @@ function fillSlideElementWithSavedSlideTags(slideNumber: number) {
 
 function clearSlideElement() {
   slideElement.innerHTML = '';
-  const slideWrapper = document.createElement('div');
-  slideWrapper.className = 'slide-wrapper';
+  const slideWrapper = document.createElement('section');
   slideElement.appendChild(slideWrapper);
 }
 
