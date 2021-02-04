@@ -125,13 +125,17 @@ function getSelectedTextAsRange(): Range {
 // Chrome doesn't have support for document.execCommand('increaseFontSize');
 // will change it later anyway, because we need font size selection.
 function increaseFontSizeOfSelectedText() {
+  const range = getSelectedTextAsRange();
   const newNode = document.createElement('big');
-  getSelectedTextAsRange().surroundContents(newNode);
+  newNode.appendChild(range.extractContents());
+  range.insertNode(newNode);
 }
 
 function decreaseFontSizeOfSelectedText() {
+  const range = getSelectedTextAsRange();
   const newNode = document.createElement('small');
-  getSelectedTextAsRange().surroundContents(newNode);
+  newNode.appendChild(range.extractContents());
+  range.insertNode(newNode);
 }
 
 function onControlButtonClick(event: MouseEvent, buttonName: string) {
@@ -476,6 +480,10 @@ function saveSlideInformation(slideNumber: number, slides: Slides) {
   // eslint-disable-next-line no-restricted-syntax
   for (const elementEditor of elementEditors) {
     elementEditor.contentEditable = 'false';
+    const spans = elementEditor.getElementsByTagName('span');
+    for (const span of spans) {
+      span.style.fontSize = '3em';
+    }
   }
 
   const section = divManipulator.getElementsByTagName('section')[0];

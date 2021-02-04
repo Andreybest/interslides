@@ -72,3 +72,10 @@ section {
     vertical-align: baseline !important;
     line-height: inherit !important;
 }
+
+small {
+    font-size: smaller !important;
+    display: inline !important;
+    vertical-align: baseline !important;
+    line-height: inherit !important;
+}
