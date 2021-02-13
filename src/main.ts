@@ -20,6 +20,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow: BrowserWindow | undefined;
 let slideCreationWindow: BrowserWindow | undefined;
 let presentationWindow: BrowserWindow | undefined;
+let settingsWindow: BrowserWindow | undefined;
 
 let appPath: string;
 let tempFolderPath: string;
@@ -109,6 +110,24 @@ function createPresentationWindow(): void {
   });
 }
 
+function createSettingsWindow(): void {
+  settingsWindow = new BrowserWindow({
+    width: 400,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: join(appPath, '/dist/preloaders/settings.js'),
+    }
+  });
+
+  settingsWindow.loadURL(`file://${appPath}/public/settings/index.html`);
+
+  settingsWindow.on('close', () => {
+    settingsWindow = undefined;
+  })
+}
+
 
 app.on('ready', () => {
   appPath = app.getAppPath();
@@ -175,6 +194,11 @@ ipcMain.on('open-file', async () => {
       }
     }
   }
+});
+
+ipcMain.on('open-settings', () => {
+  if (settingsWindow) return settingsWindow.show();
+  createSettingsWindow();
 });
 
 ipcMain.on('save-as', async (_, slides: [Map<number, string>, Map<number, string>]) => {

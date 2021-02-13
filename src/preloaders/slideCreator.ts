@@ -16,4 +16,7 @@ contextBridge.exposeInMainWorld('api', {
   previewPresentation: (slidesLocal: Map<number, string>, slidesRemote: Map<number, string>) => {
     ipcRenderer.send('preview-presentation', [slidesLocal, slidesRemote]);
   },
+  openSettings: () => {
+    ipcRenderer.send('open-settings');
+  }
 });

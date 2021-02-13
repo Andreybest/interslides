@@ -1,16 +1,18 @@
-const buttonNew = document.getElementById('new');
-const buttonOpen = document.getElementById('open');
+const buttonNew = document.getElementById('new') as HTMLElement;
+const buttonOpen = document.getElementById('open') as HTMLElement;
+const buttonSettings = document.getElementById('settings') as HTMLElement;
 
-if (buttonNew) {
-  buttonNew.onclick = (event) => {
-    event.preventDefault();
-    (window as any).api.newFile();
-  };
-}
+buttonNew.onclick = (event) => {
+  event.preventDefault();
+  (window as any).api.newFile();
+};
 
-if (buttonOpen) {
-  buttonOpen.onclick = (event) => {
-    event.preventDefault();
-    (window as any).api.openFile();
-  };
-}
+buttonOpen.onclick = (event) => {
+  event.preventDefault();
+  (window as any).api.openFile();
+};
+
+buttonSettings.onclick = (event) => {
+  event.preventDefault();
+  (window as any).api.openSettings();
+};

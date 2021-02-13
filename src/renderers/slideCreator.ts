@@ -209,6 +209,9 @@ function onControlButtonClick(event: MouseEvent, buttonName: string) {
     case 'toggle-devtools':
       (window as any).api.toggleDevTools();
       break;
+    case 'open-settings':
+      (window as any).api.openSettings();
+      break;
 
     default:
       break;
@@ -490,6 +493,7 @@ function saveSlideInformation(slideNumber: number, slides: Slides) {
   if (section) section.style.backgroundColor = '';
 
   slides.set(slideNumber, divManipulator.innerHTML);
+  if (currentMode === 'local' && localStorage.getItem('duplicate') === 'true') slidesRemote.set(slideNumber, divManipulator.innerHTML);
 }
 
 function changeActiveClassOnSlidePreviews(activeSlidePreview: HTMLElement) {

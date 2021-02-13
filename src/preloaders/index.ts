@@ -7,4 +7,7 @@ contextBridge.exposeInMainWorld('api', {
   newFile: () => {
     ipcRenderer.send('new-file');
   },
+  openSettings: () => {
+    ipcRenderer.send('open-settings');
+  },
 });

@@ -3,24 +3,21 @@
 	<head>
 		<meta charset='utf-8'>
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-		<title>InterSlides</title>
+		<title>Settings</title>
 		<meta name='viewport' content='width=device-width, initial-scale=1'>
 		<link rel='stylesheet' type='text/css' media='screen' href='index.css'>
 	</head>
 	<body>
 		<main>
 			<div id="container">
-				<div id="logo">
-					<h1>InterSlides</h1>
-				</div>
-				
 				<div id="buttons">
-					<a id="new" href="#">Create New Presentation</a>
-					<a id="open" href="#">Open Presentation</a>
-					<a id="settings" href="#">Application Settings</a>
+					<span id="duplicate" class="setting">
+						<input type="checkbox" name="css" name="duplicate" />
+						<label for="duplicate">Duplicate elements of local presentation to remote presentation</label>
+					</span>
 				</div>
 			</div>
 		</main>
-		<script src="./../../dist/renderers/index.js"></script>
+		<script src="./../../dist/renderers/settings.js"></script>
 	</body>
 </html>
