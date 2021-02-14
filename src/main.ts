@@ -53,6 +53,8 @@ if (!isDev && process.platform === 'win32') {
     });
     if (messageBox.response === 0) autoUpdater.quitAndInstall();
   });
+
+  autoUpdater.checkForUpdates();
 }
 
 let mainWindow: BrowserWindow | undefined;
