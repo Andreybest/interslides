@@ -1,6 +1,7 @@
 import {
-  app, BrowserWindow, ipcMain, dialog, Menu,
+  app, BrowserWindow, ipcMain, dialog, Menu, autoUpdater, Notification,
 } from 'electron';
+import * as isDev from 'electron-is-dev';
 import WebServer from './WebServer';
 import Archive from './Archive';
 import removeDirectory from './removeDirectory';
@@ -15,6 +16,43 @@ const TEMP_PRESENTATION_FOLDER_NAME = 'presentation';
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
+}
+
+const UPDATE_SERVER = 'https://interslides-update-server.vercel.app/';
+const updateFeed = `${UPDATE_SERVER}/update/${process.platform}/${app.getVersion()}`;
+
+// Update only Win application, linux users have package managers to take care of updating better. 
+if (!isDev && process.platform === 'win32') {
+  autoUpdater.setFeedURL({ url: updateFeed });
+
+  autoUpdater.once('update-available', () => {
+    const notification = new Notification({ title: 'InterSlides New Update!', body: 'New update is available and it\'s being downloaded now!' });
+    notification.show();
+  });
+
+  autoUpdater.on('error', (error) => {
+    dialog.showMessageBox(slideCreationWindow ? slideCreationWindow : mainWindow!, { 
+      title: 'InterSlides Failed To Update!',
+      type: 'error',
+      message: 'InterSlides encountered an error while trying to update.',
+      detail: error.message,
+    });
+  });
+
+  autoUpdater.once('update-downloaded', async (_event, _releaseNotes, releaseName, _releaseDate, _updateURL) => {
+    // on win32 only releaseName is available
+    const messageBox = await dialog.showMessageBox(slideCreationWindow ? slideCreationWindow : mainWindow!, { 
+      title: 'New Update Available!',
+      type: 'info',
+      message: 'New update for InterSlides is available, would you like to install it now?',
+      detail: `Release: ${releaseName}`,
+      buttons: ['Install now', 'Install later'],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true,
+    });
+    if (messageBox.response === 0) autoUpdater.quitAndInstall();
+  });
 }
 
 let mainWindow: BrowserWindow | undefined;
