@@ -19,42 +19,49 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const UPDATE_SERVER = 'https://interslides-update-server.vercel.app/';
-const updateFeed = `${UPDATE_SERVER}/update/${process.platform}/${app.getVersion()}`;
 
-// Update only Win application, linux users have package managers to take care of updating better. 
-if (!isDev && process.platform === 'win32') {
-  autoUpdater.setFeedURL({ url: updateFeed });
+/**
+ * Function for auto updating application. Updates only win application, linux users have package managers to take care of updating better. 
+ */
+function autoUpdateApp() {
+  const updateFeed = `${UPDATE_SERVER}/update/${process.platform}/${app.getVersion()}`;
+  if (!isDev && process.platform === 'win32') {
+    autoUpdater.setFeedURL({ url: updateFeed });
 
-  autoUpdater.once('update-available', () => {
-    const notification = new Notification({ title: 'InterSlides New Update!', body: 'New update is available and it\'s being downloaded now!' });
-    notification.show();
-  });
-
-  autoUpdater.on('error', (error) => {
-    dialog.showMessageBox(slideCreationWindow ? slideCreationWindow : mainWindow!, { 
-      title: 'InterSlides Failed To Update!',
-      type: 'error',
-      message: 'InterSlides encountered an error while trying to update.',
-      detail: error.message,
+    autoUpdater.once('update-available', () => {
+      const notification = new Notification({ title: 'InterSlides New Update!', body: 'New update is available and it\'s being downloaded now!' });
+      notification.show();
     });
-  });
 
-  autoUpdater.once('update-downloaded', async (_event, _releaseNotes, releaseName, _releaseDate, _updateURL) => {
-    // on win32 only releaseName is available
-    const messageBox = await dialog.showMessageBox(slideCreationWindow ? slideCreationWindow : mainWindow!, { 
-      title: 'New Update Available!',
-      type: 'info',
-      message: 'New update for InterSlides is available, would you like to install it now?',
-      detail: `Release: ${releaseName}`,
-      buttons: ['Install now', 'Install later'],
-      defaultId: 0,
-      cancelId: 1,
-      noLink: true,
+    autoUpdater.on('error', (error) => {
+      // const notification = new Notification({ title: 'InterSlides Failed to Update!', body: 'InterSlides failed to update, click on notification to check error log.' });
+      // notification.once('click', () => {
+      //   dialog.showMessageBox(slideCreationWindow ? slideCreationWindow : mainWindow!, {
+      //     title: 'InterSlides Failed To Update!',
+      //     type: 'error',
+      //     message: 'InterSlides encountered an error while trying to update.',
+      //     detail: error.message,
+      //   });
+      // });
     });
-    if (messageBox.response === 0) autoUpdater.quitAndInstall();
-  });
 
-  autoUpdater.checkForUpdates();
+    autoUpdater.once('update-downloaded', async (_event, _releaseNotes, releaseName, _releaseDate, _updateURL) => {
+      // on win32 only releaseName is available
+      const messageBox = await dialog.showMessageBox(slideCreationWindow ? slideCreationWindow : mainWindow!, {
+        title: 'New Update Available!',
+        type: 'info',
+        message: 'New update for InterSlides is available, would you like to install it now?',
+        detail: `Release: ${releaseName}`,
+        buttons: ['Install now', 'Install later'],
+        defaultId: 0,
+        cancelId: 1,
+        noLink: true,
+      });
+      if (messageBox.response === 0) autoUpdater.quitAndInstall();
+    });
+
+    autoUpdater.checkForUpdates();
+  }
 }
 
 let mainWindow: BrowserWindow | undefined;
@@ -179,6 +186,7 @@ app.on('ready', () => {
   
   Menu.setApplicationMenu(null);
   createWindow();
+  autoUpdateApp();
 });
 
 function openFile(window: BrowserWindow, filters?: Electron.FileFilter[]): Promise<Electron.OpenDialogReturnValue> {
