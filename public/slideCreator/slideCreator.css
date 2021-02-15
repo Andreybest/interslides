@@ -39,6 +39,10 @@ header .material-icons:active {
     background-color: #56a7eb;
 }
 
+.material-icons.save:before {
+    content: none;
+}
+
 main {
     width: 100%;
     height: 100%;
